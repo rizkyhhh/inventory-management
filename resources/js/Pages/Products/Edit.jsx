@@ -20,7 +20,7 @@ const EditProduct = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(`/products/${product.id}`); // Submit data to Laravel
+        put(`/products/${product.id}`); 
     };
 
     return (

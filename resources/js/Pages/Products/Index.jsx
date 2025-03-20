@@ -5,7 +5,7 @@ export default function Index({ products }) {
 
     const handleDelete = (id) => {
         if (window.confirm("Are you sure you want to delete this product?")) {
-            destroy(`/products/${id}`); // Perform the DELETE request
+            destroy(`/products/${id}`); 
         }
     };
 
@@ -42,7 +42,7 @@ export default function Index({ products }) {
                                 )}
                             </td>
 
-                            {/* Display Product Location Details */}
+                           
                             <td>
                                 {product.locations && product.locations.length > 0 ? (
                                     product.locations.map(location => (
@@ -55,7 +55,6 @@ export default function Index({ products }) {
                                 )}
                             </td>
 
-                            {/* Transfer History */}
                             <td>
                                 {product.transfers && product.transfers.length > 0 ? (
                                     <ul>
@@ -72,7 +71,7 @@ export default function Index({ products }) {
                                 )}
                             </td>
 
-                            {/* Actions */}
+                         
                             <td>
                                 <Link href={`/products/${product.id}/edit`} className="btn btn-warning">Edit</Link>
                                 <button onClick={() => handleDelete(product.id)} className="btn btn-danger">Delete</button>

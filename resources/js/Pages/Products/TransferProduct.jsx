@@ -14,7 +14,7 @@ export default function TransferProduct() {
         quantity: "",
     });
 
-    // Reset dependent fields when the product changes
+    
     useEffect(() => {
         setData(prev => ({
             ...prev,
@@ -26,7 +26,7 @@ export default function TransferProduct() {
         setFilteredDestinations(locations);
     }, [data.product_id]);
 
-    // Update stock & filter destination locations when source changes
+    
     useEffect(() => {
         if (data.source_location_id) {
             const sourceLoc = locations.find(loc => loc.id == data.source_location_id);
@@ -35,12 +35,11 @@ export default function TransferProduct() {
                 setSourceStock(sourceLoc.pivot?.quantity || 0);
             }
         } else {
-            setFilteredDestinations(locations); // Show all locations if no source
+            setFilteredDestinations(locations); 
             setSourceStock(0);
         }
     }, [data.source_location_id]);
 
-    // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
         if (data.source_location_id && data.quantity > sourceStock) {
@@ -55,7 +54,7 @@ export default function TransferProduct() {
             <h1>Transfer Product</h1>
             <form onSubmit={handleSubmit}>
 
-                {/* Select Product */}
+          
                 <label>Product:</label>
                 <select name="product_id" value={data.product_id} onChange={(e) => setData("product_id", e.target.value)} required>
                     <option value="">Select Product</option>
@@ -67,7 +66,6 @@ export default function TransferProduct() {
                 </select>
                 {errors.product_id && <p className="error">{errors.product_id}</p>}
 
-                {/* Select Source Location (Optional) */}
                 <label>Source Location (Leave empty for new assignment):</label>
                 <select name="source_location_id" value={data.source_location_id} onChange={(e) => setData("source_location_id", e.target.value)}>
                     <option value="">Assign from Inventory</option>
@@ -79,7 +77,6 @@ export default function TransferProduct() {
                 </select>
                 {errors.source_location_id && <p className="error">{errors.source_location_id}</p>}
 
-                {/* Select Destination Location */}
                 <label>Destination Location:</label>
                 <select name="destination_location_id" value={data.destination_location_id} onChange={(e) => setData("destination_location_id", e.target.value)} required>
                     <option value="">Select Destination</option>
@@ -91,7 +88,7 @@ export default function TransferProduct() {
                 </select>
                 {errors.destination_location_id && <p className="error">{errors.destination_location_id}</p>}
 
-                {/* Quantity Input */}
+             
                 <label>Quantity:</label>
                 <input
                     type="number"
@@ -105,7 +102,7 @@ export default function TransferProduct() {
                 />
                 {errors.quantity && <p className="error">{errors.quantity}</p>}
 
-                {/* Submit Button */}
+             
                 <button type="submit" disabled={processing || (data.source_location_id && data.quantity > sourceStock)}>Transfer</button>
             </form>
         </div>

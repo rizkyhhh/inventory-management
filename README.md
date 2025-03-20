@@ -36,6 +36,11 @@ php artisan storage:link
 npm install
 npm run dev
 
-4️⃣ Start the Laravel Server
+4️⃣ Start the Laravel Server using xampp and phpmyadmin
 php artisan serve
 Open http://127.0.0.1:8000 in your browser.
+
+5️⃣ How to navigate
+# register from http://127.0.0.1:8000 and sign in
+# http://127.0.0.1:8000/products to see product management
+# http://127.0.0.1:8000/locations to see location management

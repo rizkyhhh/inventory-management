@@ -19,17 +19,17 @@ const CreateProduct = () => {
         room_id: "", 
     });
 
-    // Handles input change
+ 
     const handleChange = (e) => {
         setData(e.target.name, e.target.value);
     };
 
-    // Handles file input for images
+  
     const handleImageChange = (e) => {
-        setData("image", e.target.files[0]); // Store file object
+        setData("image", e.target.files[0]); 
     };
 
-    // When location is selected, update related fields
+    
     const handleLocationChange = (e) => {
         const selectedLocationId = e.target.value;
         setData("location_id", selectedLocationId);
@@ -46,7 +46,7 @@ const CreateProduct = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post("/products/store"); // Submit data to Laravel
+        post("/products/store"); 
     };
 
     return (
@@ -62,7 +62,7 @@ const CreateProduct = () => {
                 <input type="number" name="stock" placeholder="Stock" value={data.stock} onChange={handleChange} required />
                 {errors.stock && <p>{errors.stock}</p>}
 
-                {/* Category Selection */}
+            
                 <select name="category_id" value={data.category_id} onChange={handleChange} required>
                     <option value="">Select Category</option>
                     {categories.map((category) => (
@@ -72,7 +72,7 @@ const CreateProduct = () => {
                     ))}
                 </select>
 
-                {/* Status Selection */}
+               
                 <select name="status_id" value={data.status_id} onChange={handleChange} required>
                     <option value="">Select Status</option>
                     {statuses.map((status) => (
@@ -82,7 +82,7 @@ const CreateProduct = () => {
                     ))}
                 </select>
 
-                {/* Location Selection */}
+            
                 <select name="location_id" value={data.location_id} onChange={handleLocationChange} required>
                     <option value="">Select Location</option>
                     {locations.map((location) => (
@@ -93,7 +93,7 @@ const CreateProduct = () => {
                 </select>
                 {errors.location_id && <p>{errors.location_id}</p>}
 
-                {/* Branch Selection - Auto-filled but editable */}
+             
                 <select name="branch_id" value={data.branch_id} onChange={handleChange} required>
                     <option value="">Select Branch</option>
                     {branches.map((branch) => (
@@ -104,7 +104,6 @@ const CreateProduct = () => {
                 </select>
                 {errors.branch_id && <p>{errors.branch_id}</p>}
 
-                {/* Building Selection - Auto-filled but editable */}
                 <select name="building_id" value={data.building_id} onChange={handleChange} required>
                     <option value="">Select Building</option>
                     {buildings.map((building) => (
@@ -115,7 +114,7 @@ const CreateProduct = () => {
                 </select>
                 {errors.building_id && <p>{errors.building_id}</p>}
 
-                {/* Floor Selection - Auto-filled but editable */}
+    
                 <select name="floor_id" value={data.floor_id} onChange={handleChange} required>
                     <option value="">Select Floor</option>
                     {floors.map((floor) => (
@@ -126,7 +125,6 @@ const CreateProduct = () => {
                 </select>
                 {errors.floor_id && <p>{errors.floor_id}</p>}
 
-                {/* Room Selection - Auto-filled but editable */}
                 <select name="room_id" value={data.room_id} onChange={handleChange} required>
                     <option value="">Select Room</option>
                     {rooms.map((room) => (
@@ -137,7 +135,6 @@ const CreateProduct = () => {
                 </select>
                 {errors.room_id && <p>{errors.room_id}</p>}
 
-                {/* Image Upload */}
                 <input type="file" name="image" onChange={handleImageChange} accept="image/*" />
                 {errors.image && <p>{errors.image}</p>}
 

@@ -53,22 +53,21 @@ class ProductController extends Controller {
             'location_id' => 'required|exists:locations,id'
         ]);
 
-        // Handle Image Upload
+       
         $imagePath = $request->hasFile('image') 
             ? $request->file('image')->store('products', 'public') 
             : null;
 
-        // Create Product
+   
         $product = Product::create([
             'name' => $request->name,
             'price' => $request->price,
             'stock' => $request->stock,
             'category_id' => $request->category_id,
             'status_id' => $request->status_id,
-            'image' => $imagePath, // Save image path
+            'image' => $imagePath,
         ]);
 
-        // Attach product to location with stock quantity
         $product->locations()->attach($validated['location_id'], ['quantity' => $product->stock]);
 
         return redirect()->route('products.index');
@@ -93,10 +92,8 @@ class ProductController extends Controller {
             'location_id' => 'required|exists:locations,id'
         ]);
 
-        // Update product first
         $product->update($validated);
 
-        // Sync product location after updating
         $product->locations()->sync([$validated['location_id'] => ['quantity' => $product->stock]]);
 
         return redirect()->route('products.index');

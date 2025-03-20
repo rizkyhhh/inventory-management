@@ -1,7 +1,7 @@
 import { useForm, usePage } from '@inertiajs/react';
 
 export default function EditLocation() {
-    const { location, branches, buildings, floors, rooms} = usePage().props; // Get location data
+    const { location, branches, buildings, floors, rooms} = usePage().props; 
     const { data, setData, put, processing, errors } = useForm({
         name: location.name,
         branch_id: location.branch_id,
@@ -16,7 +16,7 @@ export default function EditLocation() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(`/locations/${location.id}`); // Send update request
+        put(`/locations/${location.id}`);
     };
 
     return (
