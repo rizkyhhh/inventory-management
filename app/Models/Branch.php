@@ -17,11 +17,4 @@ class Branch extends Model
         return $this->hasMany(Location::class);
     }
 
-    protected static function boot() {
-        parent::boot();
-
-        static::creating(function ($branch) {
-            $branch->id = Str::uuid(); // Generate a unique ID
-        });
-    }
 }

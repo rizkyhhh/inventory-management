@@ -11,9 +11,13 @@ class Location extends Model
 
     protected $fillable = ['name', 'branch_id', 'building_id', 'floor_id', 'room_id'];
 
-    public function products() {
-        return $this->belongsToMany(Product::class, 'product_location')->withPivot('quantity');
+    public function products()
+    {
+    return $this->belongsToMany(Product::class, 'product_location')
+                ->withPivot('quantity')
+                ->withTimestamps();
     }
+
     public function branch()
     {
         return $this->belongsTo(Branch::class);

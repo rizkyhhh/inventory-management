@@ -46,23 +46,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/products/create', [ProductController::class, 'create']);
     Route::post('/products/store', [ProductController::class, 'store']);
-    // Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
-
-    
     Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
 
-    Route::get('/products/product-transfer/{product}', [ProductTransferController::class, 'create'])
+    Route::get('/products/{product}/product-transfer', [ProductTransferController::class, 'create'])
     ->name('product-transfers.create');
-
-    Route::post('/products/product-transfer', [ProductTransferController::class, 'store']);
+    Route::post('/products/{product}/product-transfer', [ProductTransferController::class, 'store'])
+    ->name('product-transfers.store');
 
      // Route for DELETE
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
 });
 
-
-Route::get('/products/create', [ProductController::class, 'create']);
 // Route::get('/locations/{id}/edit', [LocationController::class, 'edit'])->name('locations.edit');
 // Route::put('/locations/{location}', [LocationController::class, 'update'])->name('locations.update');
 

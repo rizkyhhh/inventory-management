@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'description', 'image', 'stock', 'price', 'category_id', 'status_id'];
+    protected $fillable = ['name', 'description', 'image', 'stock', 'price', 'category_id', 'status_id', 'location_id', 'branch_id', 'building_id', 'room_id'];
 
     public function category() {
         return $this->belongsTo(Category::class);
@@ -20,7 +20,25 @@ class Product extends Model
     }
 
     public function locations() {
-        return $this->belongsToMany(Location::class, 'product_location')->withPivot('quantity');
+        return $this->belongsToMany(Location::class, 'product_location')
+                    ->withPivot('quantity')
+                    ->withTimestamps();
+    }
+
+    public function branch() {
+        return $this->belongsTo(Branch::class);
+    }
+    
+    public function building() {
+        return $this->belongsTo(Building::class);
+    }
+
+    public function floor() {
+        return $this->belongsTo(Floor::class);
+    }
+    
+    public function room() {
+        return $this->belongsTo(Room::class);
     }
 
     public function transfers() {

@@ -1,110 +1,112 @@
 import React, { useState, useEffect } from "react";
-import { useForm, usePage } from "@inertiajs/react";
+import { useForm, usePage, Link } from "@inertiajs/react";
+import DashboardLayout from "@/Layouts/DashboardLayout";
 
 export default function TransferProduct() {
-    const { products = [], locations = [] } = usePage().props;
+    const { product, locations = [], transfers = [] } = usePage().props;
 
+    const [sourceLocation, setSourceLocation] = useState(null);
     const [sourceStock, setSourceStock] = useState(0);
-    const [filteredDestinations, setFilteredDestinations] = useState(locations); // Default to all locations
+    const [filteredDestinations, setFilteredDestinations] = useState([]);
 
-    const { data, setData, post, processing, errors } = useForm({
-        product_id: "",
-        source_location_id: "",
+    const { data, setData, post, processing, errors, reset } = useForm({
+        product_id: product.id,
+        source_location_id: product.location_id || "",
         destination_location_id: "",
         quantity: "",
     });
 
-    
     useEffect(() => {
-        setData(prev => ({
-            ...prev,
-            source_location_id: "",
-            destination_location_id: "",
-            quantity: "",
-        }));
-        setSourceStock(0);
-        setFilteredDestinations(locations);
-    }, [data.product_id]);
+        if (product.location_id) {
+            const productLocation = locations.find(loc => loc.id === product.location_id);
+            setSourceLocation(productLocation);
 
-    
-    useEffect(() => {
-        if (data.source_location_id) {
-            const sourceLoc = locations.find(loc => loc.id == data.source_location_id);
-            if (sourceLoc) {
-                setFilteredDestinations(locations.filter(loc => loc.branch === sourceLoc.branch && loc.id !== sourceLoc.id));
-                setSourceStock(sourceLoc.pivot?.quantity || 0);
-            }
-        } else {
-            setFilteredDestinations(locations); 
-            setSourceStock(0);
+            let storedQuantity = Number(product.stock) || 0;
+            let transferredOut = transfers.filter(t => t.source_location_id === product.location_id)
+                .reduce((sum, t) => sum + (Number(t.quantity) || 0), 0);
+            let transferredIn = transfers.filter(t => t.destination_location_id === product.location_id)
+                .reduce((sum, t) => sum + (Number(t.quantity) || 0), 0);
+
+            setSourceStock(storedQuantity - transferredOut + transferredIn);
+
+            setFilteredDestinations(locations.filter(loc => loc.id !== product.location_id));
         }
-    }, [data.source_location_id]);
+    }, [product, locations, transfers]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (data.source_location_id && data.quantity > sourceStock) {
+        if (data.quantity > sourceStock) {
             alert("Not enough stock at source location.");
             return;
         }
-        post("/products/product-transfer");
+        post(`/products/${product.id}/product-transfer`, {
+            onSuccess: () => {
+                reset();
+                alert('Product transferred successfully');
+            },
+            onError: () => {
+                alert('Error occurred while transferring the product');
+            }
+        });
     };
 
     return (
-        <div>
-            <h1>Transfer Product</h1>
-            <form onSubmit={handleSubmit}>
+        <DashboardLayout>
+            <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-3xl mx-auto">
+                <h1 className="text-2xl font-semibold text-gray-700 mb-4">Transfer Product: {product.name}</h1>
+                <Link href="/products" className="text-blue-500 hover:underline">Back to Products</Link>
+                
+                <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-600">Source Location:</label>
+                        <p className="text-gray-800 font-semibold">
+                            {sourceLocation 
+                                ? `${sourceLocation.name} - Branch: ${sourceLocation.branch_name}, Building: ${sourceLocation.building_name}, Floor: ${sourceLocation.floor_name}, Room: ${sourceLocation.room_name}`
+                                : "No Location Assigned"}
+                        </p>
+                        <p className="text-gray-500">Available Stock: <strong>{sourceStock} pcs</strong></p>
+                    </div>
 
-          
-                <label>Product:</label>
-                <select name="product_id" value={data.product_id} onChange={(e) => setData("product_id", e.target.value)} required>
-                    <option value="">Select Product</option>
-                    {products.map(prod => (
-                        <option key={prod.id} value={prod.id}>
-                            {prod.name} (Stock: {prod.stock})
-                        </option>
-                    ))}
-                </select>
-                {errors.product_id && <p className="error">{errors.product_id}</p>}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-600">Destination Location:</label>
+                        <select
+                            className="w-full p-2 border rounded-lg"
+                            value={data.destination_location_id}
+                            onChange={(e) => setData("destination_location_id", e.target.value)}
+                            required
+                        >
+                            <option value="">Select Location</option>
+                            {filteredDestinations.map(location => (
+                                <option key={location.id} value={location.id}>{location.name}</option>
+                            ))}
+                        </select>
+                        {errors.destination_location_id && <p className="text-red-500 text-sm">{errors.destination_location_id}</p>}
+                    </div>
 
-                <label>Source Location (Leave empty for new assignment):</label>
-                <select name="source_location_id" value={data.source_location_id} onChange={(e) => setData("source_location_id", e.target.value)}>
-                    <option value="">Assign from Inventory</option>
-                    {locations.map(loc => (
-                        <option key={loc.id} value={loc.id}>
-                            {loc.name} - {loc.branch} (Floor: {loc.floor}, Room: {loc.room}) - {loc.pivot?.quantity ?? 0} pcs
-                        </option>
-                    ))}
-                </select>
-                {errors.source_location_id && <p className="error">{errors.source_location_id}</p>}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-600">Quantity:</label>
+                        <input
+                            type="number"
+                            className="w-full p-2 border rounded-lg"
+                            placeholder={sourceStock > 0 ? `Max: ${sourceStock} pcs` : "Enter quantity"}
+                            value={data.quantity}
+                            onChange={(e) => setData("quantity", e.target.value)}
+                            required
+                            min="1"
+                            max={sourceStock || ""}
+                        />
+                        {errors.quantity && <p className="text-red-500 text-sm">{errors.quantity}</p>}
+                    </div>
 
-                <label>Destination Location:</label>
-                <select name="destination_location_id" value={data.destination_location_id} onChange={(e) => setData("destination_location_id", e.target.value)} required>
-                    <option value="">Select Destination</option>
-                    {filteredDestinations.map(loc => (
-                        <option key={loc.id} value={loc.id}>
-                            {loc.name} - {loc.branch} (Floor: {loc.floor}, Room: {loc.room})
-                        </option>
-                    ))}
-                </select>
-                {errors.destination_location_id && <p className="error">{errors.destination_location_id}</p>}
-
-             
-                <label>Quantity:</label>
-                <input
-                    type="number"
-                    name="quantity"
-                    placeholder={data.source_location_id ? `Max: ${sourceStock} pcs` : "Enter quantity"}
-                    value={data.quantity}
-                    onChange={(e) => setData("quantity", e.target.value)}
-                    required
-                    min="1"
-                    max={data.source_location_id ? sourceStock : undefined}
-                />
-                {errors.quantity && <p className="error">{errors.quantity}</p>}
-
-             
-                <button type="submit" disabled={processing || (data.source_location_id && data.quantity > sourceStock)}>Transfer</button>
-            </form>
-        </div>
+                    <button
+                        type="submit"
+                        className={`w-full p-2 text-white font-semibold rounded-lg ${processing ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'}`}
+                        disabled={processing || !data.destination_location_id || data.quantity < 1 || data.quantity > sourceStock}
+                    >
+                        {processing ? "Transferring..." : "Transfer"}
+                    </button>
+                </form>
+            </div>
+        </DashboardLayout>
     );
 }

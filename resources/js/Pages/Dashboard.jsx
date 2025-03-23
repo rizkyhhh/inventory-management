@@ -1,16 +1,10 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import DashboardLayout from "@/Layouts/DashboardLayout";
 
-export default function Dashboard({ products }) {
+export default function Dashboard() {
     return (
-        <div>
-            <Head title="Dashboard" />
-            <h1>Inventory Dashboard</h1>
-            <ul>
-                {products.map((product) => (
-                    <li key={product.id}>{product.name} - {product.stock}</li>
-                ))}
-            </ul>
-        </div>
+        <DashboardLayout>
+            <h2 className="text-2xl font-semibold">Dashboard</h2>
+            <p>Welcome to your inventory management system!</p>
+        </DashboardLayout>
     );
 }
